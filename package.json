@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@umijs/openapi": "^1.14.1"
+  }
+}
