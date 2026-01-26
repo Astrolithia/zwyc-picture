@@ -9,6 +9,7 @@ import com.zwickyc.zwycpicturebackend.manager.FileManager;
 import com.zwickyc.zwycpicturebackend.model.dto.file.UploadPictureResult;
 import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureQueryRequest;
 import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureReviewRequest;
+import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureUploadByBatchRequest;
 import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureUploadRequest;
 import com.zwickyc.zwycpicturebackend.model.entity.Picture;
 import com.zwickyc.zwycpicturebackend.model.entity.User;
@@ -71,7 +72,30 @@ public interface PictureService extends IService<Picture> {
      */
     QueryWrapper<Picture> getQueryWrapper(PictureQueryRequest pictureQueryRequest);
 
+    /**
+     * 图片审核
+     *
+     * @param pictureReviewRequest
+     * @param loginUser
+     */
     void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
 
+    /**
+     * 填充审核参数
+     *
+     * @param picture
+     * @param loginUser
+     */
     void fileReviewParams(Picture picture, User loginUser);
+
+    /**
+     * 批量抓取和创建图片
+     *
+     * @param pictureUploadByBatchRequest
+     * @param loginUser
+     * @return 成功创建的图片数
+     */
+    Integer uploadPictureByBatch(
+            PictureUploadByBatchRequest pictureUploadByBatchRequest,
+            User loginUser);
 }
