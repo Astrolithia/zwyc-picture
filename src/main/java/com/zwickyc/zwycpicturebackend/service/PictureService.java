@@ -8,6 +8,7 @@ import com.zwickyc.zwycpicturebackend.exception.ThrowUtils;
 import com.zwickyc.zwycpicturebackend.manager.FileManager;
 import com.zwickyc.zwycpicturebackend.model.dto.file.UploadPictureResult;
 import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureQueryRequest;
+import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureReviewRequest;
 import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureUploadRequest;
 import com.zwickyc.zwycpicturebackend.model.entity.Picture;
 import com.zwickyc.zwycpicturebackend.model.entity.User;
@@ -26,14 +27,23 @@ import java.util.Date;
 public interface PictureService extends IService<Picture> {
 
     /**
+     * 校验图片
+     *
+     * @param picture
+     */
+    void validPicture(Picture picture);
+
+    /**
      * 上传图片
      *
-     * @param multipartFile
+     * @param inputSource          文件输入源
      * @param pictureUploadRequest
      * @param loginUser
      * @return
      */
-    PictureVO uploadPicture(MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, User loginUser);
+    PictureVO uploadPicture(Object inputSource,
+                            PictureUploadRequest pictureUploadRequest,
+                            User loginUser);
 
     /**
      * 获取图片包装类（单条）
@@ -61,5 +71,7 @@ public interface PictureService extends IService<Picture> {
      */
     QueryWrapper<Picture> getQueryWrapper(PictureQueryRequest pictureQueryRequest);
 
-    void validPicture(Picture picture);
+    void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
+
+    void fileReviewParams(Picture picture, User loginUser);
 }
