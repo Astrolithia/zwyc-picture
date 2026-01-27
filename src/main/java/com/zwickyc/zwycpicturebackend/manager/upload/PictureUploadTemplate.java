@@ -1,11 +1,14 @@
 package com.zwickyc.zwycpicturebackend.manager.upload;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.qcloud.cos.model.PutObjectResult;
+import com.qcloud.cos.model.ciModel.persistence.CIObject;
 import com.qcloud.cos.model.ciModel.persistence.ImageInfo;
+import com.qcloud.cos.model.ciModel.persistence.ProcessResults;
 import com.zwickyc.zwycpicturebackend.config.CosClientConfig;
 import com.zwickyc.zwycpicturebackend.exception.BusinessException;
 import com.zwickyc.zwycpicturebackend.exception.ErrorCode;
@@ -16,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.annotation.Resource;
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 图片上传模板
@@ -56,6 +60,20 @@ public abstract class PictureUploadTemplate {
             PutObjectResult putObjectResult = cosManager.putPictureObject(uploadPath, file);
             // 5. 获取图片信息对象，封装返回结果
             ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
+            // 获取到图片处理结果
+            ProcessResults processResults = putObjectResult.getCiUploadResult().getProcessResults();
+            List<CIObject> objectList = processResults.getObjectList();
+            if (CollUtil.isNotEmpty(objectList)) {
+                // 获取压缩之后得到的文件信息
+                CIObject compressedCIObject = objectList.get(0);
+                // 缩略图默认等于压缩图
+                CIObject thumbnailCIObject = compressedCIObject;
+                if (objectList.size() > 1) {
+                    thumbnailCIObject = objectList.get(1);
+                }
+                // 封装压缩图的返回结果
+                return buildResult(originalFilename, compressedCIObject, thumbnailCIObject);
+            }
             return buildResult(originalFilename, file, uploadPath, imageInfo);
         } catch (Exception e) {
             log.error("图片上传到对象存储失败", e);
@@ -69,6 +87,37 @@ public abstract class PictureUploadTemplate {
     /**
      * 封装返回结果
      *
+     * @param originalFilename   原始文件名
+     * @param compressedCIObject 压缩后的对象
+     * @param thumbnailCIObject  缩略图对象
+     * @return
+     */
+    private UploadPictureResult buildResult(String originalFilename, CIObject compressedCIObject, CIObject thumbnailCIObject) {
+        // 计算宽高
+        int picWidth = compressedCIObject.getWidth();
+        int picHeight = compressedCIObject.getHeight();
+        double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
+        // 封装返回结果
+        UploadPictureResult uploadPictureResult = new UploadPictureResult();
+        uploadPictureResult.setPicName(FileUtil.mainName(originalFilename));
+        uploadPictureResult.setPicSize(compressedCIObject.getSize().longValue());
+        uploadPictureResult.setPicWidth(picWidth);
+        uploadPictureResult.setPicHeight(picHeight);
+        uploadPictureResult.setPicScale(picScale);
+        uploadPictureResult.setPicFormat(compressedCIObject.getFormat());
+        String actualFormat = compressedCIObject.getFormat().toLowerCase();
+        uploadPictureResult.setPicFormat(actualFormat);
+        // 设置压缩后的原图地址
+        uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + compressedCIObject.getKey());
+        // 设置缩略图地址
+        uploadPictureResult.setThumbnailUrl(cosClientConfig.getHost() + "/" + thumbnailCIObject.getKey());
+        // 返回可访问的地址
+        return uploadPictureResult;
+    }
+
+    /**
+     * 封装返回结果
+     *
      * @param originalFilename
      * @param file
      * @param uploadPath
@@ -76,7 +125,7 @@ public abstract class PictureUploadTemplate {
      * @return
      */
     private UploadPictureResult buildResult(String originalFilename, File file, String uploadPath, ImageInfo imageInfo) {
-        // 计算宽高
+// 计算宽高
         UploadPictureResult uploadPictureResult = new UploadPictureResult();
         int picWidth = imageInfo.getWidth();
         int picHeight = imageInfo.getHeight();
@@ -88,6 +137,8 @@ public abstract class PictureUploadTemplate {
         uploadPictureResult.setPicHeight(picHeight);
         uploadPictureResult.setPicScale(picScale);
         uploadPictureResult.setPicFormat(imageInfo.getFormat());
+        String actualFormat = imageInfo.getFormat().toLowerCase();
+        uploadPictureResult.setPicFormat(actualFormat);
         uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + uploadPath);
         // 返回可访问的地址
         return uploadPictureResult;
