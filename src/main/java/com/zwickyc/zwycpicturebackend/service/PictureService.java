@@ -7,10 +7,7 @@ import com.zwickyc.zwycpicturebackend.exception.ErrorCode;
 import com.zwickyc.zwycpicturebackend.exception.ThrowUtils;
 import com.zwickyc.zwycpicturebackend.manager.FileManager;
 import com.zwickyc.zwycpicturebackend.model.dto.file.UploadPictureResult;
-import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureQueryRequest;
-import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureReviewRequest;
-import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureUploadByBatchRequest;
-import com.zwickyc.zwycpicturebackend.model.dto.picture.PictureUploadRequest;
+import com.zwickyc.zwycpicturebackend.model.dto.picture.*;
 import com.zwickyc.zwycpicturebackend.model.entity.Picture;
 import com.zwickyc.zwycpicturebackend.model.entity.User;
 import com.zwickyc.zwycpicturebackend.model.vo.PictureVO;
@@ -105,4 +102,28 @@ public interface PictureService extends IService<Picture> {
      * @param oldPicture
      */
     void clearPictureFile(Picture oldPicture);
+
+    /**
+     * 删除图片
+     *
+     * @param pictureId
+     * @param loginUser
+     */
+    void deletePicture(long pictureId, User loginUser);
+
+    /**
+     * 编辑图片
+     *
+     * @param pictureEditRequest
+     * @param loginUser
+     */
+    void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
+
+    /**
+     * 校验空间图片的权限
+     *
+     * @param loginUser
+     * @param picture
+     */
+    void checkPictureAuth(User loginUser, Picture picture);
 }
