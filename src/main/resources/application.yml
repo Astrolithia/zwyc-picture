@@ -2,11 +2,16 @@ server:
   port: 8123
   servlet:
     context-path: /api
-    # cokkie 30 天国企
+    # cookie 30 天过期
     session:
       cookie:
         max-age: 2592000
 spring:
+  # Session 配置
+  session:
+    store-type: redis
+    # session 30 天后过期
+    timeout: 2592000
   application:
     name: zwyc-picture-backend
     # 数据库配置
@@ -21,17 +26,12 @@ spring:
     host: 127.0.0.1
     port: 6379
     timeout: 5000
-  # Session 配置
-  session:
-    store-type: redis
-    # session 30 天后过期
-    timeout: 2592000
   # 开放更大的文件上传体积
   servlet:
     multipart:
       max-file-size: 10MB
-  profiles:
-    active: local
+#  profiles:
+#    active: local
 mybatis-plus:
   configuration:
     # Mybatis-Plus配置
