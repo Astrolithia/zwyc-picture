@@ -2,7 +2,6 @@ package com.zwickyc.zwycpicturebackend.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,11 +11,9 @@ import com.zwickyc.zwycpicturebackend.exception.ErrorCode;
 import com.zwickyc.zwycpicturebackend.exception.ThrowUtils;
 import com.zwickyc.zwycpicturebackend.model.dto.space.SpaceAddRequest;
 import com.zwickyc.zwycpicturebackend.model.dto.space.SpaceQueryRequest;
-import com.zwickyc.zwycpicturebackend.model.entity.Picture;
 import com.zwickyc.zwycpicturebackend.model.entity.Space;
 import com.zwickyc.zwycpicturebackend.model.entity.User;
 import com.zwickyc.zwycpicturebackend.model.enums.SpaceLevelEnum;
-import com.zwickyc.zwycpicturebackend.model.vo.PictureVO;
 import com.zwickyc.zwycpicturebackend.model.vo.SpaceVO;
 import com.zwickyc.zwycpicturebackend.model.vo.UserVO;
 import com.zwickyc.zwycpicturebackend.service.SpaceService;
@@ -24,16 +21,12 @@ import com.zwickyc.zwycpicturebackend.mapper.SpaceMapper;
 import com.zwickyc.zwycpicturebackend.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static net.sf.jsqlparser.util.validation.metadata.MetadataContext.exists;
 
 /**
  * @author shiro

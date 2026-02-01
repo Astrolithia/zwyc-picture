@@ -81,10 +81,14 @@ public class PictureVO implements Serializable {
     private String picFormat;
 
     /**
+     * 图片主色调
+     */
+    private String picColor;
+
+    /**
      * 创建用户 id
      */
     private Long userId;
-
 
     /**
      * 空间 id
@@ -110,7 +114,6 @@ public class PictureVO implements Serializable {
      * 创建用户信息
      */
     private UserVO user;
-
 
     private static final long serialVersionUID = 1L;
 

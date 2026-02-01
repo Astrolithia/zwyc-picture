@@ -1,6 +1,5 @@
 package com.zwickyc.zwycpicturebackend.controller;
 
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zwickyc.zwycpicturebackend.annotation.AuthCheck;
 import com.zwickyc.zwycpicturebackend.common.BaseResponse;
@@ -21,7 +20,6 @@ import com.zwickyc.zwycpicturebackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
