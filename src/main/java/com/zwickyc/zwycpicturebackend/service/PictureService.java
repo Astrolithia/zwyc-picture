@@ -3,6 +3,7 @@ package com.zwickyc.zwycpicturebackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zwickyc.zwycpicturebackend.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.zwickyc.zwycpicturebackend.model.dto.picture.*;
 import com.zwickyc.zwycpicturebackend.model.entity.Picture;
 import com.zwickyc.zwycpicturebackend.model.entity.User;
@@ -138,4 +139,12 @@ public interface PictureService extends IService<Picture> {
      * @param loginUser
      */
     void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser);
+
+    /**
+     * 创建扩图任务
+     *
+     * @param createPictureOutPaintingTaskRequest
+     * @param loginUser
+     */
+    CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser);
 }

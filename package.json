@@ -1,8 +1,0 @@
-{
-  "devDependencies": {
-    "@umijs/openapi": "^1.14.1"
-  },
-  "dependencies": {
-    "vue-cropper": "^0.6.5"
-  }
-}
