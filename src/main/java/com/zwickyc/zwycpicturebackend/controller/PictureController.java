@@ -63,12 +63,9 @@ public class PictureController {
     /**
      * 本地缓存
      */
-    private final Cache<String, String> LOCAL_CACHE = Caffeine.newBuilder()
-            .initialCapacity(1024)
-            .maximumSize(10_000) // 最大 10000 条
+    private final Cache<String, String> LOCAL_CACHE = Caffeine.newBuilder().initialCapacity(1024).maximumSize(10_000) // 最大 10000 条
             // 缓存 5 分钟后移除
-            .expireAfterWrite(Duration.ofMinutes(5))
-            .build();
+            .expireAfterWrite(Duration.ofMinutes(5)).build();
 
     /**
      * 上传图片（可重复上传）
@@ -86,9 +83,7 @@ public class PictureController {
      */
     @PostMapping("/upload/url")
 //    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<PictureVO> uploadPictureByUrl(
-            @RequestBody PictureUploadRequest pictureUploadRequest,
-            HttpServletRequest request) {
+    public BaseResponse<PictureVO> uploadPictureByUrl(@RequestBody PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         String fileUrl = pictureUploadRequest.getFileUrl();
         PictureVO pictureVO = pictureService.uploadPicture(fileUrl, pictureUploadRequest, loginUser);
@@ -120,8 +115,7 @@ public class PictureController {
      */
     @PostMapping("/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest,
-                                               HttpServletRequest request) {
+    public BaseResponse<Boolean> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest, HttpServletRequest request) {
         if (pictureUpdateRequest == null || pictureUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -232,8 +226,7 @@ public class PictureController {
             }
         }
         // 查询数据库
-        Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
-                pictureService.getQueryWrapper(pictureQueryRequest));
+        Page<Picture> picturePage = pictureService.page(new Page<>(current, size), pictureService.getQueryWrapper(pictureQueryRequest));
         // 获取封装类
         return ResultUtils.success(pictureService.getPictureVOPage(picturePage, request));
     }
@@ -246,9 +239,7 @@ public class PictureController {
      * @return
      */
     @PostMapping("/list/page/vo/cache")
-    public BaseResponse<Page<PictureVO>> listPictureVOByPageWithCache(
-            @RequestBody PictureQueryRequest pictureQueryRequest,
-            HttpServletRequest request) {
+    public BaseResponse<Page<PictureVO>> listPictureVOByPageWithCache(@RequestBody PictureQueryRequest pictureQueryRequest, HttpServletRequest request) {
         long current = pictureQueryRequest.getCurrent();
         long size = pictureQueryRequest.getPageSize();
         // 限制爬虫
@@ -271,8 +262,7 @@ public class PictureController {
             return ResultUtils.success(cachedPage);
         }
         // 查询数据库
-        Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
-                pictureService.getQueryWrapper(pictureQueryRequest));
+        Page<Picture> picturePage = pictureService.page(new Page<>(current, size), pictureService.getQueryWrapper(pictureQueryRequest));
         Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
         // 存入 redis 缓存
         String cacheValue = JSONUtil.toJsonStr(pictureVOPage);
@@ -321,8 +311,7 @@ public class PictureController {
      */
     @PostMapping("/review")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> doPictureReview(@RequestBody PictureReviewRequest pictureReviewRequest,
-                                                 HttpServletRequest request) {
+    public BaseResponse<Boolean> doPictureReview(@RequestBody PictureReviewRequest pictureReviewRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(pictureReviewRequest == null, ErrorCode.PARAMS_ERROR);
         User loginUser = userService.getLoginUser(request);
         pictureService.doPictureReview(pictureReviewRequest, loginUser);
@@ -338,9 +327,7 @@ public class PictureController {
      */
     @PostMapping("/upload/batch")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Integer> uploadPictureByBatch(
-            @RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest,
-            HttpServletRequest request) {
+    public BaseResponse<Integer> uploadPictureByBatch(@RequestBody PictureUploadByBatchRequest pictureUploadByBatchRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(pictureUploadByBatchRequest == null, ErrorCode.PARAMS_ERROR);
         User loginUser = userService.getLoginUser(request);
         int uploadCount = pictureService.uploadPictureByBatch(pictureUploadByBatchRequest, loginUser);
@@ -355,13 +342,27 @@ public class PictureController {
      * @return
      */
     @PostMapping("/search/color")
-    public BaseResponse<List<PictureVO>> searchPictureByColor(@RequestBody SearchPictureByColorRequest searchPictureByColorRequest,
-                                                              HttpServletRequest request) {
+    public BaseResponse<List<PictureVO>> searchPictureByColor(@RequestBody SearchPictureByColorRequest searchPictureByColorRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(searchPictureByColorRequest == null, ErrorCode.PARAMS_ERROR);
         String picColor = searchPictureByColorRequest.getPicColor();
         Long spaceId = searchPictureByColorRequest.getSpaceId();
         User loginUser = userService.getLoginUser(request);
         List<PictureVO> pictureVOList = pictureService.searchPictureByColor(spaceId, picColor, loginUser);
         return ResultUtils.success(pictureVOList);
+    }
+
+    /**
+     * 批量编辑图片
+     *
+     * @param pictureEditByBatchRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/edit/batch")
+    public BaseResponse<Boolean> editPictureByBatch(@RequestBody PictureEditByBatchRequest pictureEditByBatchRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(pictureEditByBatchRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        pictureService.editPictureByBatch(pictureEditByBatchRequest, loginUser);
+        return ResultUtils.success(true);
     }
 }
