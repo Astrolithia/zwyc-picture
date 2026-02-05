@@ -6,19 +6,15 @@ import com.zwickyc.zwycpicturebackend.exception.ErrorCode;
 import com.zwickyc.zwycpicturebackend.model.entity.User;
 import com.zwickyc.zwycpicturebackend.model.enums.UserRoleEnum;
 import com.zwickyc.zwycpicturebackend.service.UserService;
-import lombok.val;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.mvc.condition.RequestConditionHolder;
 
 import javax.annotation.Resource;
-import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 
 @Aspect

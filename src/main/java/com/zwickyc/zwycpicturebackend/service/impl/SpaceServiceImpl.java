@@ -9,15 +9,19 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zwickyc.zwycpicturebackend.exception.BusinessException;
 import com.zwickyc.zwycpicturebackend.exception.ErrorCode;
 import com.zwickyc.zwycpicturebackend.exception.ThrowUtils;
+import com.zwickyc.zwycpicturebackend.mapper.SpaceMapper;
 import com.zwickyc.zwycpicturebackend.model.dto.space.SpaceAddRequest;
 import com.zwickyc.zwycpicturebackend.model.dto.space.SpaceQueryRequest;
 import com.zwickyc.zwycpicturebackend.model.entity.Space;
+import com.zwickyc.zwycpicturebackend.model.entity.SpaceUser;
 import com.zwickyc.zwycpicturebackend.model.entity.User;
 import com.zwickyc.zwycpicturebackend.model.enums.SpaceLevelEnum;
+import com.zwickyc.zwycpicturebackend.model.enums.SpaceRoleEnum;
+import com.zwickyc.zwycpicturebackend.model.enums.SpaceTypeEnum;
 import com.zwickyc.zwycpicturebackend.model.vo.SpaceVO;
 import com.zwickyc.zwycpicturebackend.model.vo.UserVO;
 import com.zwickyc.zwycpicturebackend.service.SpaceService;
-import com.zwickyc.zwycpicturebackend.mapper.SpaceMapper;
+import com.zwickyc.zwycpicturebackend.service.SpaceUserService;
 import com.zwickyc.zwycpicturebackend.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -25,7 +29,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,13 +41,22 @@ import java.util.stream.Collectors;
  * @createDate 2026-01-27 18:58:52
  */
 @Service
-public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space> implements SpaceService {
+public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
+        implements SpaceService {
 
     @Resource
     private UserService userService;
 
     @Resource
+    private SpaceUserService spaceUserService;
+
+    @Resource
     private TransactionTemplate transactionTemplate;
+
+//    为了方便部署，注释掉分表
+//    @Resource
+//    @Lazy
+//    private DynamicShardingManager dynamicShardingManager;
 
     @Override
     public long addSpace(SpaceAddRequest spaceAddRequest, User loginUser) {
@@ -77,6 +93,17 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space> implements
                 // 创建
                 boolean result = this.save(space);
                 ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "保存空间到数据库失败");
+                // 创建成功后，如果是团队空间，关联新增团队成员记录
+                if (SpaceTypeEnum.TEAM.getValue() == (spaceAddRequest.getSpaceType())) {
+                    SpaceUser spaceUser = new SpaceUser();
+                    spaceUser.setSpaceId(space.getId());
+                    spaceUser.setUserId(userId);
+                    spaceUser.setSpaceRole(SpaceRoleEnum.ADMIN.getValue());
+                    result = spaceUserService.save(spaceUser);
+                    ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "创建团队成员记录失败");
+                }
+//                 创建分表（仅对团队空间生效）为方便部署，暂时不使用
+//                dynamicShardingManager.createSpacePictureTable(space);
                 // 返回新写入的数据 id
                 return space.getId();
             });
@@ -91,6 +118,8 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space> implements
         String spaceName = space.getSpaceName();
         Integer spaceLevel = space.getSpaceLevel();
         SpaceLevelEnum spaceLevelEnum = SpaceLevelEnum.getEnumByValue(spaceLevel);
+        Integer spaceType = space.getSpaceType();
+        SpaceTypeEnum spaceTypeEnum = SpaceTypeEnum.getEnumByValue(spaceType);
         // 创建时校验
         if (add) {
             if (StrUtil.isBlank(spaceName)) {
@@ -98,6 +127,9 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space> implements
             }
             if (spaceLevel == null) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "空间级别不能为空");
+            }
+            if (spaceType == null) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "空间类别不能为空");
             }
         }
         // 修改数据时，空间名称进行校验

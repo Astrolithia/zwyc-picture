@@ -1,6 +1,5 @@
 package com.zwickyc.zwycpicturebackend.service;
 
-import cn.hutool.http.server.HttpServerRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zwickyc.zwycpicturebackend.model.dto.user.UserQueryRequest;

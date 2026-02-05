@@ -1,11 +1,8 @@
 package com.zwickyc.zwycpicturebackend.model.dto.picture;
 
-import com.zwickyc.zwycpicturebackend.common.PageRequest;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 图片编辑请求

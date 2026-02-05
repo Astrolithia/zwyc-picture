@@ -1,20 +1,12 @@
 package com.zwickyc.zwycpicturebackend.manager.upload;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpStatus;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.http.Method;
-import com.zwickyc.zwycpicturebackend.exception.BusinessException;
 import com.zwickyc.zwycpicturebackend.exception.ErrorCode;
 import com.zwickyc.zwycpicturebackend.exception.ThrowUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 

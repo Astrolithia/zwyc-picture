@@ -1,10 +1,8 @@
 package com.zwickyc.zwycpicturebackend.model.dto.user;
 
-import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 用户创建请求

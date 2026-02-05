@@ -1,6 +1,6 @@
 package com.zwickyc.zwycpicturebackend.model.vo;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.io.Serializable;
